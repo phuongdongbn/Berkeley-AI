@@ -144,7 +144,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         def minimaxSearch(state, agentIndex, depth):
-            # if in min layer and last ghost
+            # if in last ghost
             if agentIndex == state.getNumAgents():
                 # if reached max depth, evaluate state
                 if depth == self.depth:
@@ -152,7 +152,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 # otherwise start new max layer with bigger depth
                 else:
                     return minimaxSearch(state, 0, depth + 1)
-            # if not min layer and last ghost
+            # if not last ghost
             else:
                 moves = state.getLegalActions(agentIndex)
                 # if nothing can be done, evaluate the state
