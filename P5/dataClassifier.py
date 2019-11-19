@@ -78,46 +78,31 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    # Compute gradients
-    for x in range(1, DIGIT_DATUM_WIDTH):
-        for y in range(1, DIGIT_DATUM_HEIGHT):
-            features[("horiz", x, y)] = int(datum.getPixel(x, y) >
-                                            datum.getPixel(x - 1, y))
+    has_loop=False
+    run_dfs_hash={}
+    def run_dfs(x,y):
+        if x<0 or x>=DIGIT_DATUM_WIDTH:
+            return False
+        if y<0 or y>=DIGIT_DATUM_HEIGHT:
+            return False 
+        if datum.getPixel(x,y)==2 or datum.getPixel(x,y)==1:
+            return True
 
-            features[("verti", x, y)] = int(datum.getPixel(x, y) >
-                                            datum.getPixel(x, y - 1))
+        if (x,y) in visited.keys():
+            return True
 
-    # Check for continuous regions
-    def getNeighbors(x, y):
-        neighbors = []
-        if x > 0:
-            neighbors.append((x - 1, y))
-        if x < DIGIT_DATUM_WIDTH - 1:
-            neighbors.append((x + 1, y))
-        if y > 0:
-            neighbors.append((x, y - 1))
-        if y < DIGIT_DATUM_HEIGHT - 1:
-            neighbors.append((x, y + 1))
-        return neighbors
+        visited[(x,y)]=True
+        return run_dfs(x-1,y) and run_dfs(x+1,y) and run_dfs(x,y-1) and run_dfs(x,y+1)
 
-    region = set()
-    contiguous = 0
-    for x in xrange(DIGIT_DATUM_WIDTH):
-        for y in xrange(DIGIT_DATUM_HEIGHT):
-            if (x, y) not in region and datum.getPixel(x, y) < 2:
-                contiguous += 1
-                stack = [(x, y)]
-                while stack:
-                    point = stack.pop()
-                    region.add(point)
-                    for neighbor in getNeighbors(*point):
-                        if datum.getPixel(*neighbor) < 2 and neighbor not in region:
-                            stack.append(neighbor)
-
-    features["contiguous0"] = contiguous % 2
-    features["contiguous1"] = (contiguous >> 1) % 2
-    features["contiguous2"] = (contiguous >> 2) % 2
-
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            visited={}
+            if datum.getPixel(x,y)==0:
+                if run_dfs(x,y)==True:
+                    has_loop=True
+                    break
+                    
+    features["has_loop"] =has_loop
     return features
 
 
@@ -162,66 +147,31 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    breaks = 0
-    pixels = datum.getPixels()
-    i = 0
-    nonzero = 0
-    firstLeft = None
-    aboveCenter = 0
-    while i < len(pixels):
-        row = pixels[i]
-        active = False
-        j = 1
-        while j < len(row):
-            if row[j] != 0:
-                nonzero += 1
-                if not firstLeft or j < firstLeft:
-                    firstLeft = j
-                if j <= (len(pixels) + 1) / 2:
-                    aboveCenter += 1
-            if row[j] != row[j - 1]:
-                breaks += 1
-            j += 1
-        i += 1
-            
-    width = len(pixels[0]) - (firstLeft * 2)
-    j = 0
-    firstTop = None
-    pastRight = 0
-    while j < len(pixels[0]):
-        active = False
-        col = [p[j] for p in pixels]
-        i = 1        
-        while i < len(col):
-            if col[j] != 0:
-                nonzero += 1
-                if not firstTop or i < firstTop:
-                    firstTop = i           
-                if i <= (len(pixels[0]) + 1) / 2:
-                    pastRight += 1
-            if col[i] != row[i - 1]:
-                breaks += 1
-            i += 1
-        j += 1
-        
-    height = len(pixels) - (firstTop * 2)
-    aspectRatio = float(width) / height
-    for n in range(5):
-        features[n] = breaks > 175 and 1.0 or 0.0
-        
-    for n in range(10):
-        features[(n + 1) * 10] = aspectRatio < 0.69
-        
-    for n in range(5):
-        features[-n] = nonzero > 300 and 1.0 or 0.0
-        
-    percentAbove = float(aboveCenter) / nonzero
-    for n in range(5):
-        features[-(n + 1) * 10] = percentAbove > 0.35 and 1.0 or 0.0
-        
-    percentRight = float(pastRight) / nonzero
-    for n in range(1000, 1005):
-        features[n] = percentRight < 0.27 and 1.0 or 0.0
+    #get state 
+    state = state.generateSuccessor(0,action)
+    foods = state.getFood().asList()
+    ghosts = state.getGhostPositions()
+    pac = state.getPacmanPosition()
+    capsules = state.getCapsules()
+
+    limit = 10000000000
+
+    minDistance=limit
+    for food in foods:
+        distance = util.manhattanDistance(food, pac)
+        minDistance = min(distance, minDistance)
+    if minDistance < limit:
+        features['closet food'] = 1.0/minDistance
+    else: 
+        features['closet food'] = 2.0
+
+    minDistance = limit
+    for ghost in ghosts:
+        distance = util.manhattanDistance(ghost, pac)
+        minDistance = min(distance, minDistance)
+
+    features['closet ghost'] = minDistance
+
     return features
 
 
