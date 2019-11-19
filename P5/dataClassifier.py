@@ -79,7 +79,6 @@ def enhancedFeatureExtractorDigit(datum):
 
     "*** YOUR CODE HERE ***"
     has_loop=False
-    run_dfs_hash={}
     def run_dfs(x,y):
         if x<0 or x>=DIGIT_DATUM_WIDTH:
             return False
@@ -103,6 +102,7 @@ def enhancedFeatureExtractorDigit(datum):
                     break
                     
     features["has_loop"] =has_loop
+    
     return features
 
 
