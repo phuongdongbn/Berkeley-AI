@@ -19,10 +19,10 @@ import mostFrequent
 import naiveBayes
 import perceptron
 import perceptron_pacman
+import mira
 import samples
 import sys
 import util
-import pdb
 from pacman import GameState
 
 TEST_SET_SIZE = 100
@@ -75,33 +75,10 @@ def enhancedFeatureExtractorDigit(datum):
 
     ##
     """
-
-    has_loop=False
-    run_dfs_hash={}
-    def run_dfs(x,y):
-        if x<0 or x>=DIGIT_DATUM_WIDTH:
-            return False
-        if y<0 or y>=DIGIT_DATUM_HEIGHT:
-            return False 
-        if datum.getPixel(x,y)==2 or datum.getPixel(x,y)==1:
-            return True
-
-        if (x,y) in visited.keys():
-            return True
-
-        visited[(x,y)]=True
-        return run_dfs(x-1,y) and run_dfs(x+1,y) and run_dfs(x,y-1) and run_dfs(x,y+1)
-
-    for x in range(DIGIT_DATUM_WIDTH):
-        for y in range(DIGIT_DATUM_HEIGHT):
-            visited={}
-            if datum.getPixel(x,y)==0:
-                if run_dfs(x,y)==True:
-                    has_loop=True
-                    break
-
     features =  basicFeatureExtractorDigit(datum)
-    features["has_loop"] =has_loop
+
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
 
     return features
 
@@ -145,30 +122,9 @@ def enhancedPacmanFeatures(state, action):
     For each state, this function is called with each legal action.
     It should return a counter with { <feature name> : <feature value>, ... }
     """
-    state=state.generateSuccessor(0,action)
     features = util.Counter()
-    foods=state.getFood().asList()
-    pac=state.getPacmanPosition()
-    minD=9999
-    for food in foods:
-        d=util.manhattanDistance(food,pac)
-        minD=min(d,minD)
-    if minD!=9999:
-        features["closest food"] = 1.0/minD
-    else:
-        features["closest food"] = 2
-
-    if features["closest food"]==0:
-        pdb.set_trace()
-
-
-    minD=10000000000
-    for ghost in state.getGhostPositions():
-        d=util.manhattanDistance(pac,ghost) 
-        minD=min(d,minD)
-
-    features["closest ghost"] = minD#1/pow(minD,2)
-
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
     return features
 
 
@@ -208,17 +164,18 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
     (and you can modify the signature if you want).
     """
 
-    # Put any code  here...
+    # Put any code here...
     # Example of use:
-    for i in range(len(guesses)):
-        prediction = guesses[i]
-        truth = testLabels[i]
-        if (prediction != truth):
-            print "==================================="
-            print "Mistake on example %d" % i
-            print "Predicted %d; truth is %d" % (prediction, truth)
-            print "Image: "
-            print rawTestData[i]
+    # for i in range(len(guesses)):
+    #     prediction = guesses[i]
+    #     truth = testLabels[i]
+    #     if (prediction != truth):
+    #         print "==================================="
+    #         print "Mistake on example %d" % i
+    #         print "Predicted %d; truth is %d" % (prediction, truth)
+    #         print "Image: "
+    #         print rawTestData[i]
+    #         break
 
 
 ## =====================

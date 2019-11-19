@@ -14,7 +14,6 @@
 
 # Perceptron implementation for apprenticeship learning
 import util
-import pdb
 from perceptron import PerceptronClassifier
 from pacman import GameState
 
@@ -51,21 +50,4 @@ class PerceptronClassifierPacman(PerceptronClassifier):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
                 "*** YOUR CODE HERE ***"
-                max_label = "" # y'
-                data = trainingData[i]
-                datum,legalMoves=data
-                max_score=-10000000
-                best_move=""
-                for l in legalMoves:
-                    score=0
-                    for feature in self.features:
-                        score+=datum[l][feature]*self.weights[feature]
-                    if score > max_score:
-                        max_score=score
-                        best_move=l
-                if best_move=="":
-                    pdb.set_trace()
-                if best_move is not trainingLabels[i]:
-                    temp=self.weights
-                    self.weights+=datum[trainingLabels[i]]
-                    self.weights-=datum[best_move]
+                util.raiseNotDefined()

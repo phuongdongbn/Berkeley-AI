@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-#
+# 
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -14,13 +14,11 @@
 
 # Perceptron implementation
 import util
-import pdb
 PRINT = True
 
 class PerceptronClassifier:
     """
     Perceptron classifier.
-
     Note that the variable 'datum' in this code refers to a counter of features
     (not to a raw samples.Datum).
     """
@@ -36,12 +34,11 @@ class PerceptronClassifier:
         assert len(weights) == len(self.legalLabels);
         self.weights = weights;
 
-    def train(self, trainingData, trainingLabels, validationData, validationLabels):
+    def train( self, trainingData, trainingLabels, validationData, validationLabels ):
         """
         The training loop for the perceptron passes through the training data several
         times and updates the weight vector for each label based on classification errors.
         See the project description for details.
-
         Use the provided self.weights[label] data structure so that
         the classify method works correctly. Also, recall that a
         datum is a counter from features to values for those features
@@ -55,27 +52,18 @@ class PerceptronClassifier:
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
-                "*** YOUR CODE HERE ***"
-                max_label = "" # y'
-                max_score = -100
                 f = trainingData[i]
-                for label in list(set(trainingLabels)): # y''
-                    w = self.weights[label]
-                    score = 0
-                    for feature, value in f.iteritems():
-                        score += value*w[feature]
-                    if score > max_score:
-                        max_score = score
-                        max_label = label
-                if max_label is not trainingLabels[i]:
-                    self.weights[trainingLabels[i]] += f
-                    self.weights[max_label] -= f
+                ytrue = trainingLabels[i]
+                score_max, ypred = max([
+                    (f * self.weights[y],y) for y in self.legalLabels])
+                if ypred != ytrue:
+                    self.weights[ytrue] += f
+                    self.weights[ypred] -= f
 
-    def classify(self, data):
+    def classify(self, data ):
         """
         Classifies each datum as the label that most closely matches the prototype vector
         for that label.  See the project description for details.
-
         Recall that a datum is a util.counter...
         """
         guesses = []
@@ -91,9 +79,9 @@ class PerceptronClassifier:
         """
         Returns a list of the 100 features with the greatest weight for some label
         """
-        featuresWeights = []
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        wy = self.weights[label]
+        wy = sorted( [(v,k) for k,v in wy.items()], reverse=True )
+        featuresWeights = [e[1] for e in wy[:100]]
 
         return featuresWeights
